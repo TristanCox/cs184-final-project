@@ -1,0 +1,124 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="assets/styles/page.css">
+		<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+		<meta charset="utf-8">
+	</head>
+
+
+
+	<body>
+		<header>
+			<div class="content">
+				<div id="title">
+					<a href="index.html">CS184 Final Project</a></li>
+					</div>
+				<div class="navbar">
+					<a href="">Final Report</a></li>
+				<a href="milestone.html">Milestone</a></li>
+			<a href="proposal.html">Proposal</a></li>
+				</div>
+			</div>
+
+		</header>
+		<div id="image-banner"></div>
+		<div id="container">
+			<div class="section">
+				<div class="info">
+					<div class="body-header"> Project Milestone</div>
+
+					<div class="info-title">A Two-Dimensional Magnetic Playground </div>
+					<div class="info-content">
+						<div class="info-required">Summary</div>
+						<div class="info-intro">In this project we are going to implement a simulation of a magnet interacting with particles. Operating in two dimensions, we plan to show how the particles can form shapes and how different magnetic fields affect them.
+						</div>
+					</div>
+
+					<div class="body">
+
+							<div class="body-header">Accomplishments</div>
+
+
+							<p></p>
+							<p>We were able to simulate magnetic field vectors. We began
+							    implementing our user interface by adding an
+							    interactive feature to adjust the magnetic strength. In
+							    addition, we added a second magnet and rendered the
+							    interactions of their magnetic fields.</p>
+
+							<div class="body-header">Preliminary Results</div>
+							<p></p>
+							<p>
+							    Although we are very satisfied with our current progress, we
+							    have run in to some unexpected edge cases such as keeping in
+							    mind the length of the lines as they directly correlate to
+							    magnetic field strength. We were able to solve this edge
+							    case by putting a hard limit on vector field line length.
+
+							    Throughout the last few weeks building our simulation, we
+							    have realized that rendering live changes is going to require us to start
+							    prioritizing optimization going forward. Some concerns we
+							    have are when rendering multiple magnets the run time
+							    increases linearly. In addition, if we adjust the magnet
+							    properties, the simulation has to rerender everything which
+							    takes longer with a high magnetic strength.
+							</p>
+						<div class="body-header">Updated Schedule </div>
+						<p> We are currently on track with our initial schedule from our project
+						    proposal however we may add
+						    additional features if we have time.</p>
+						<ul>
+							<li>Week 1</li>
+							<ul>
+								<li>Getting accustomed to 2D graphics.</li>
+								<ul>
+									<li> Figuring out what graphics library to use.</li>
+								</ul>
+								<li>Simulating particles.</li>
+								<ul>
+									<li> Researching what physics are necessary.</li>
+								</ul>
+							</ul>
+							<li>Week 2</li>
+							<ul>
+								<li>Applying magnetic forces.</li>
+								<ul>
+									<li> Researching physics and figuring out where to apply formulas.</li>
+								</ul>
+							</ul>
+							<li>Week 3</li>
+							<ul>
+								<li>Creating sketches.</li>
+							</ul>
+							<li>Week 4</li>
+							<ul>
+								<li>Creating a UI.</li>
+							</ul>
+						</ul>
+
+						<div class="body-header"> Video Walkthrough </div>
+
+						<ul>
+						    <iframe width="560" height="315"
+							src="https://www.youtube.com/embed/ueZdjJqsqj8" frameborder="0"
+							allow="accelerometer; autoplay; encrypted-media; gyroscope;
+						    picture-in-picture" allowfullscreen></iframe>
+						
+
+
+						</ul>
+						<div class="body-header"> Slides </div>
+
+						<ul>
+
+						          <iframe src="assets/images/FinalProjectSlidesMileston.pdf"
+								  width="560" height="350">
+    </iframe>
+
+						</ul>
+
+					</div>
+				</div>
+			</div>
+	</body>
+</html>
