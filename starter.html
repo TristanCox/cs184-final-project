@@ -31,11 +31,11 @@
         var stepLength = 10;
         var magnets = new Array(2);
         for (var i = 0; i < magnets.length; i++) {
-          magnets[i] = new Array(3);
+          magnets[i] = new Array(4);
         }
 
-        magnets[0] = [426, 189];
-        magnets[1] = [150, 150];
+        magnets[0] = [426, 189, 20, 40];
+        magnets[1] = [150, 150, 10, 20];
 
         var numStars = 1000;
         var starProps = new Array(numStars);
@@ -47,6 +47,34 @@
         var strengths = []
 
         var moveLimit = 1;
+
+        var moved = -1;
+
+        elem.onmousedown = function() {
+          for (i in magnets) {
+            var left = magnets[i][0] - (magnets[i][2] / 2);
+            var right = magnets[i][0] + (magnets[i][2] / 2);
+            var up = magnets[i][1] - (magnets[i][3] / 2);
+            var down = magnets[i][1] + (magnets[i][3] / 2);
+            var ox = event.offsetX;
+            var oy = event.offsetY;
+            if (ox > left && ox < right && oy > up && oy < down) {
+              moved = i;
+            } else {
+              console.log(ox, oy, "LRUD: ", left, right, up, down);
+            }
+          }
+        }
+
+        elem.onmouseup = function() {
+          if (moved != -1) {
+            magnets[moved][0] = event.offsetX;
+            magnets[moved][1] = event.offsetY;
+            moved = -1;
+            render()
+          }
+        }
+
 
         for (var i = 0; i < numStars; i++) {
             var rand = Math.floor((Math.random() * 10) + 1);
@@ -99,8 +127,8 @@
               }
               starProps[j][2] += F[0];
               starProps[j][3] += F[1];
-              starProps[j][0] = x + starProps[j][2];
-              starProps[j][1] = y + starProps[j][3];
+              starProps[j][0] = x + starProps[j][2] * 0.1;
+              starProps[j][1] = y + starProps[j][3] * 0.1;
               star.translation.x = starProps[j][0];
               star.translation.y = starProps[j][1];
             }
@@ -110,6 +138,7 @@
 
         function render() {
             two.clear();
+            vectors = {};
             strengths[0] = controls.strength1;
             strengths[1] = controls.strength2;
             for (var i = 0; i < width; i += stepLength) {
@@ -150,8 +179,8 @@
                 }
             }
             // two has convenience methods to create shapes.
-            var rect = two.makeRectangle(magnets[0][0], magnets[0][1], 20, 40);
-            var rect2 = two.makeRectangle(magnets[1][0], magnets[1][1], 10, 20);
+            var rect = two.makeRectangle(magnets[0][0], magnets[0][1], magnets[0][2], magnets[0][3]);
+            var rect2 = two.makeRectangle(magnets[1][0], magnets[1][1], magnets[1][2], magnets[1][3]);
 
             //center of rect: 218, 110
             rect.fill = 'rgb(0, 200, 255)';
