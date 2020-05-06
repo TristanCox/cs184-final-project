@@ -7,7 +7,7 @@
         canvas { display: block; }
     </style>
     <script src="./two.js"></script>
-    <script type="text/javascript" src="./dat.gui.min.js"></script>
+    <script type="text/javascript" src="./dat.gui.js"></script>
 </head>
 <body>
     <div id="draw-shapes"></div>
@@ -118,21 +118,20 @@
                     if (r > strengths[k] / constraint){
                       continue;
                     }
-                    var rhat = new Two.Vector(br.x,br.y);
-                    rhat.set(rhat.x / r, rhat.y / r);
-                    var m = new Two.Vector(0, 5*20 / 6 * strengths[k]);
-                    var numTermOne = 3 * rhat.dot(m);
-                    var numerator = (rhat.multiplyScalar(numTermOne)).subSelf(m);
-                    numerator.divideScalar(2 * Math.PI * r * r);
+                    var width = 800;
+                    var height = 600;
+                    var the_calm_downer = 10;
 
-    
-                    if(r > 1.5) {
-                        if (currVect == null) {
-                          vectors[str] = new Two.Vector();
-                        } 
-                        vectors[str].addSelf(numerator);
-                        currVect = vectors[str];
+                    var elem = document.getElementById('draw-shapes');
+                    var params = { width: width, height: height };
+                    var two = new Two(params).appendTo(elem);
+
+                    var stepLength = 12;
+                    var magnets = new Array(2);
+                    for (var i = 0; i < magnets.length; i++) {
+                        magnets[i] = new Array(3);
                     }
+<<<<<<< HEAD
                   }
                   if (currVect == null)
                     continue;
