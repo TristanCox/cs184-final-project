@@ -7,6 +7,7 @@
         canvas { display: block; }
     </style>
     <script src="./two.js"></script>
+    <script type="text/javascript" src="./dat.gui.min.js"></script>
 </head>
 <body>
     <div id="draw-shapes"></div>
@@ -19,88 +20,134 @@
           y += MAX_16BIT_SIGNED;
           return (x << 16) | y;
         }
-        var width = 400;
-        var height = 300;
-        var center_x = 213;
-        var center_y = 100;
+        var width = 800;
+        var height = 600;
         var the_calm_downer = 10;
+
         var elem = document.getElementById('draw-shapes');
         var params = { width: width, height: height };
         var two = new Two(params).appendTo(elem);
+
         var stepLength = 12;
         var magnets = new Array(2);
         for (var i = 0; i < magnets.length; i++) {
           magnets[i] = new Array(3);
         }
-        magnets[0] = [center_x, center_y, 50];
-        magnets[1] = [150, 150, 50];
+
+        magnets[0] = [426, 189];
+        magnets[1] = [150, 150];
+
+        var stars = new Array(1);
         var vectors = {};
-        console.log(magnets);
         var d = new Date();
         var t = d.getTime();
-        console.log(t);
-        for (var i = 0; i < width; i+= stepLength) {
-            for (var j = 0; j < height; j+=stepLength) {
-              var str = getKey(i, j);
-              var currVect = vectors[str];
-              for (var k = 0; k < magnets.length; k++) {
-                var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
-                var r = br.length();
-                //if (r > magnets[k][2] / 5){
-                  //continue;
-                //}
-                var rhat = new Two.Vector(br.x,br.y);
-                rhat.set(rhat.x / r, rhat.y / r);
-                var m = new Two.Vector(0, 5*20 / 6 * magnets[k][2]);
-                var numTermOne = 3 * rhat.dot(m);
-                var numerator = (rhat.multiplyScalar(numTermOne)).subSelf(m);
-                numerator.divideScalar(2 * Math.PI * r * r);
+        var constraint = 7;
+        var strengths = []
+
+        stars[0] = [100, 100, 0, 0]
+        var star = two.makeStar(stars[0][0], stars[0][1]);
+
+        two.bind('update', function() {
+          if (getKey(star.x, star.y)) {
+            var B = vectors[getKey(star.x, star.y)].clone();
+            var M = B.multiplyScalar((3 * .4)/(1+.4));
+            var F = vectors[getKey(star.x, star.y)].clone();
+            F = F.multiplyScalar(M.dot(B));
+            stars[0][2] += F.x;
+            stars[0][3] += F.y;
+            star.x = star.x + stars[0][2];
+            star.y = star.y + stars[0][3];
+          }
+        });
 
 
-                //if(r > 1.5) {
-                    if (currVect == null) {
-                      vectors[str] = new Two.Vector();
-                    } 
-                    vectors[str].addSelf(numerator);
-                    currVect = vectors[str];
-                //}
-              }
-              //if (currVect == null)
-                //continue;
-              if (currVect.length() > stepLength * 2)
-                currVect = currVect.normalize().multiplyScalar(stepLength * 2);
-              var x2 = i + 0.5 * (currVect.x);
-              var x1 = i - 0.5 * (currVect.x);
-              var y2 = j + 0.5 * (currVect.y);
-              var y1 = j - 0.5 * (currVect.y);
+        function render() {
+            two.clear();
+            strengths[0] = controls.strength1;
+            strengths[1] = controls.strength2;
+            for (var i = 0; i < width; i += stepLength) {
+                for (var j = 0; j < height; j += stepLength) {
+                  var str = getKey(i, j);
+                  var currVect = vectors[str];
+                  for (var k = 0; k < magnets.length; k++) {
+                    var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
+                    var r = br.length();
+                    if (r > strengths[k] / constraint){
+                      continue;
+                    }
+                    var rhat = new Two.Vector(br.x,br.y);
+                    rhat.set(rhat.x / r, rhat.y / r);
+                    var m = new Two.Vector(0, 5*20 / 6 * strengths[k]);
+                    var numTermOne = 3 * rhat.dot(m);
+                    var numerator = (rhat.multiplyScalar(numTermOne)).subSelf(m);
+                    numerator.divideScalar(2 * Math.PI * r * r);
 
-              var line = two.makeLine(x1, y1, x2, y2);
-              line.linewidth = 0.5;
-              line.fill = "#881111";
-              line.stroke = "rgba(0, 0, 0, 255)";
-              var begin = Date.now()
-              while (Date.now() - begin < 1000) {
-                continue;
-              }
+    
+                    if(r > 1.5) {
+                        if (currVect == null) {
+                          vectors[str] = new Two.Vector();
+                        } 
+                        vectors[str].addSelf(numerator);
+                        currVect = vectors[str];
+                    }
+                  }
+                  if (currVect == null)
+                    continue;
+                  if (currVect.length() > stepLength * 2)
+                    currVect = currVect.normalize().multiplyScalar(stepLength * 2);
+                  var x2 = i + 0.5 * (currVect.x);
+                  var x1 = i - 0.5 * (currVect.x);
+                  var y2 = j + 0.5 * (currVect.y);
+                  var y1 = j - 0.5 * (currVect.y);
+
+                  var line = two.makeLine(x1, y1, x2, y2);
+                  line.linewidth = 0.5;
+                  line.fill = "#881111";
+                  line.stroke = "rgba(0, 0, 0, 255)";
+                }
             }
+            // two has convenience methods to create shapes.
+            var rect = two.makeRectangle(magnets[0][0], magnets[0][1], 20, 40);
+            var rect2 = two.makeRectangle(magnets[1][0], magnets[1][1], 10, 20);
+
+            //center of rect: 218, 110
+            rect.fill = 'rgb(0, 200, 255)';
+            rect.noStroke();
+
+            rect2.fill = 'blue';
+            rect2.noStroke();
+
+            // Don't forget to tell two to render everything
+            // to the screen
+            two.update();
         }
-        // two has convenience methods to create shapes.
-        var rect = two.makeRectangle(213, 100, 10, 20);
 
-        rect.fill = 'rgb(0, 200, 255)';
-        rect.noStroke();
-
-        var rect2 = two.makeRectangle(150, 150, 10, 20);
-
-        rect2.fill = 'blue';
-        rect2.noStroke();
-
-        // Don't forget to tell two to render everything
-        // to the screen
-        two.update();
         d = new Date();
         console.log(d.getTime(), t);
         console.log(1000.0 / (d.getTime() - t));
+        var controls = new function() {
+          this.strength1 = 50;
+          strengths[0] = this.strength1;
+          this.strength2 = 50;
+          strengths[1] = this.strength2;
+        };
+
+        var Play = { Play:function(){two.play();}};
+
+        var gui = new dat.GUI();
+        var strength = gui.add(controls, 'strength1', 0, 1000);
+        var strength2 = gui.add(controls, 'strength2', 0, 1000);
+        var button = gui.add(Play, 'Play');
+
+        render();
+        strength.onChange(
+            render
+            );
+        strength2.onChange(
+            render
+            );
+            
+
     </script>
 </body>
 </html>
