@@ -69,9 +69,9 @@
                         
                         strengths[1] = controls.strength2;
 
-                        var min_radius = 1.5;
+                        var min_radius = 0;
                         var max_angle =  2*Math.PI;
-                        var max_radius = strengths[0] / constraint;
+                        // var max_radius = strengths[0] / constraint;
 
                         console.log(max_radius);
                         // for (var r = min_radius; r <= max_radius; r += steplength) {
@@ -123,6 +123,7 @@
                         // }
                         
                         for (var k = 0; k<magnets.length; k++) {
+                            var max_radius = strengths[k] / constraint;
                             for (var rad = min_radius; rad <= max_radius; rad += steplength) {
                                 for (var a = 0; a < max_angle; a += 0.1) {
 
@@ -145,24 +146,22 @@
                                     numerator.divideScalar(2 * Math.PI * r * r);
 
 
-                                    if (r > 1.5) {
-                                        if (currVect == null) {
-                                            vectors[str] = new Two.Vector();
-                                        }
-                                        vectors[str].addSelf(numerator);
-                                        currVect = vectors[str];
+                                    if (currVect == null) {
+                                        vectors[str] = new Two.Vector();
                                     }
+                                    vectors[str].addSelf(numerator);
+                                    currVect = vectors[str];
                                     if (currVect == null)
                                         continue;
-                                    if (currVect.length() > stepLength * 2)
-                                        currVect = currVect.normalize().multiplyScalar(stepLength * 2);
+                                    if (currVect.length() > stepLength * 10)
+                                        currVect = currVect.normalize().multiplyScalar(stepLength * 10);
                                     var x2 = i + 0.5 * (currVect.x);
                                     var x1 = i - 0.5 * (currVect.x);
                                     var y2 = j + 0.5 * (currVect.y);
                                     var y1 = j - 0.5 * (currVect.y);
 
                                     var line = two.makeLine(x1, y1, x2, y2);
-                                    line.linewidth = 0.5;
+                                    line.linewidth = 0.1;
                                     line.fill = "#881111";
                                     line.stroke = "rgba(0, 0, 0, 255)";
 
