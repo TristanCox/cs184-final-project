@@ -7,7 +7,7 @@
         canvas { display: block; }
     </style>
     <script src="./two.js"></script>
-    <script type="text/javascript" src="./dat.gui.min.js"></script>
+    <script type="text/javascript" src="./dat.gui.js"></script>
 </head>
 <body>
     <div id="draw-shapes"></div>
@@ -49,8 +49,8 @@
         var moveLimit = 1;
 
         for (var i = 0; i < numStars; i++) {
-          starProps[i] = [10 * (i % (width / stepLength)), 10 * (i / (width / stepLength)), 0, 0, 20, 10, 6];
-          stars[i] = two.makeStar(starProps[i][0], starProps[i][1], 20, 10, 6);
+          starProps[i] = [10 * (i % (width / stepLength)), 10 * (i / (width / stepLength)), 0, 0, 20, 1, 6];
+          stars[i] = two.makeCircle(starProps[i][0], starProps[i][1], starProps[i][4]);//two.makeStar(starProps[i][0], starProps[i][1], 20, 10, 6);
         }
 
         two.bind('update', function() {
@@ -82,7 +82,7 @@
               avgVect[0] /= numOkay;
               avgVect[1] /= numOkay;
               var s = starProps[j];
-              star.fill = 'red';
+              star.fill = 'black';
               var B = avgVect;
               var scalar = (3 * .4)/(1+.4);
               var M = [B[0] * scalar, B[1] * scalar] ;
@@ -159,8 +159,8 @@
             // Don't forget to tell two to render everything
             for (var i = 0; i < numStars; i++){
               var s = starProps[i];
-              stars[i] = two.makeStar(s[0], s[1], s[4], s[5], s[6]);
-              stars[i].fill = 'red';
+              stars[i] = two.makeCircle(s[0], s[1], s[5])//two.makeStar(s[0], s[1], s[4], s[5], s[6]);
+              stars[i].fill = 'black';
             }
             // to the screen
              
