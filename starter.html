@@ -49,8 +49,12 @@
         var moveLimit = 1;
 
         for (var i = 0; i < numStars; i++) {
-          starProps[i] = [10 * (i % (width / stepLength)), 10 * (i / (width / stepLength)), 0, 0, 20, 1, 6];
-          stars[i] = two.makeCircle(starProps[i][0], starProps[i][1], starProps[i][4]);//two.makeStar(starProps[i][0], starProps[i][1], 20, 10, 6);
+            var rand = Math.floor((Math.random() * 10) + 1);
+
+            
+          starProps[i] = [20 * (i % (width / stepLength)) + rand, 30 * (i / (width / stepLength)) + rand, 0, 0, 20, 1, 6];
+          stars[i] = two.makeCircle(starProps[i][0], starProps[i][1], starProps[i][4]);
+            //two.makeStar(starProps[i][0], starProps[i][1], 20, 10, 6);
         }
 
         two.bind('update', function() {
