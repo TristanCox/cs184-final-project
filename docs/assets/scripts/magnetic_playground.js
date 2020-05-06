@@ -1,17 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { margin: 0; }
-        canvas { display: block; }
-    </style>
-    <script src="./two.js"></script>
-    <script type="text/javascript" src="./dat.gui.js"></script>
-</head>
-<body>
-    <div id="draw-shapes"></div>
-    <script>
         var MAX_16BIT_SIGNED = 32767;
         function getKey(x, y) {
           if (x > MAX_16BIT_SIGNED || y > MAX_16BIT_SIGNED)
@@ -195,8 +181,4 @@
         strength2.onChange(
             render
             );
-            
-
-    </script>
-</body>
-</html>
+ 
