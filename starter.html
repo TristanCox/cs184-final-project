@@ -6,8 +6,8 @@
         body { margin: 0; }
         canvas { display: block; }
     </style>
-    <script src="./../two.js"></script>
-    <script type="text/javascript" src="./../dat.gui.js"></script>
+    <script src="./two.js"></script>
+    <script type="text/javascript" src="./dat.gui.js"></script>
 </head>
 <body>
     <div id="draw-shapes"></div>
@@ -49,9 +49,9 @@
 
                     if (r > 2) {
                         var line = two.makeLine(x1, y1, x2, y2);
-                        line.linewidth = 0.5;
-                        line.fill = "#881111";
-                        line.stroke = "rgba(0, 0, 0, 255)";
+                        line.linewidth = controls.linewidth;
+                        line.fill = controls.fieldcolor;
+                        line.stroke = controls.fieldcolor;
                     }
                 }
             }
@@ -59,26 +59,40 @@
             var rect = two.makeRectangle(center_x, center_y, 20, 40);
 
             //center of rect: 218, 110
-            rect.fill = 'rgb(0, 200, 255)';
+            rect.fill = controls.magnetcolor;
             rect.noStroke();
 
 
-            // Don't forget to tell two to render everything
-            // to the screen
             two.update();
         }
 
         var controls = new function() {
             this.strength = 50;
-        };
+            this.linewidth = 0.5;
+            this.magnetcolor = '#e52016';
+            this.fieldcolor = '#4287f5';
+        }
 
         var gui = new dat.GUI();
-        var strength = gui.add(controls, 'strength', 0, 1000);
+        var strength = gui.add(controls, 'strength', 0, 150);
+        var linewidth = gui.add(controls, 'linewidth', 0, 5);
+        var magnetcolor = gui.addColor(controls, 'magnetcolor');
+        var fieldcolor = gui.addColor(controls, 'fieldcolor');
 
         render();
         strength.onChange(
             render
             );
+        linewidth.onChange(
+            render
+        );
+        magnetcolor.onChange(
+            render
+        )
+        fieldcolor.onChange(
+            render
+        )
+
 
     </script>
 </body>
