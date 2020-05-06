@@ -23,6 +23,7 @@
                     var width = 800;
                     var height = 600;
                     var the_calm_downer = 10;
+                    var steplength = 5;
 
                     var elem = document.getElementById('draw-shapes');
                     var params = { width: width, height: height };
@@ -61,49 +62,108 @@
                     });
 
 
+
                     function render() {
                         two.clear();
                         strengths[0] = controls.strength1;
                         strengths[1] = controls.strength2;
-                        for (var i = 0; i < width; i += stepLength) {
-                            for (var j = 0; j < height; j += stepLength) {
-                                var str = getKey(i, j);
-                                var currVect = vectors[str];
-                                for (var k = 0; k < magnets.length; k++) {
-                                    var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
+
+                        var min_radius = 1.5;
+                        var max_angle =  2*Math.PI;
+                        var max_radius = 10//strengths[0] / constraint
+
+                        // for (var r = min_radius; r <= max_radius; r += steplength) {
+                        //     for (var a = 0; a < max_angle; a += steplength) {
+                        //         var str = getKey(r, a);
+                        //         var currVect = vectors[str];
+                        //         for (var k = 0; k < magnets.length; k++) {
+                        //             var i = r*Math.cos(a) + magnets[k][0];
+                        //             var j = r*Math.sign(a) + magnets[k][1];
+                        //
+                        //             // var str = getKey(i, j);
+                        //             // var currVect = vectors[str];
+                        //
+                        //             var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
+                        //             var r = br.length();
+                        //             if (r > strengths[k] / constraint){
+                        //                 continue;
+                        //             }
+                        //             var rhat = new Two.Vector(br.x,br.y);
+                        //             rhat.set(rhat.x / r, rhat.y / r);
+                        //             var m = new Two.Vector(0, 5*20 / 6 * strengths[k]);
+                        //             var numTermOne = 3 * rhat.dot(m);
+                        //             var numerator = (rhat.multiplyScalar(numTermOne)).subSelf(m);
+                        //             numerator.divideScalar(2 * Math.PI * r * r);
+                        //
+                        //
+                        //             if(r > 1.5) {
+                        //                 if (currVect == null) {
+                        //                     vectors[str] = new Two.Vector();
+                        //                 }
+                        //                 vectors[str].addSelf(numerator);
+                        //                 currVect = vectors[str];
+                        //             }
+                        //         }
+                        //         if (currVect == null)
+                        //             continue;
+                        //         if (currVect.length() > stepLength * 2)
+                        //             currVect = currVect.normalize().multiplyScalar(stepLength * 2);
+                        //         var x2 = i + 0.5 * (currVect.x);
+                        //         var x1 = i - 0.5 * (currVect.x);
+                        //         var y2 = j + 0.5 * (currVect.y);
+                        //         var y1 = j - 0.5 * (currVect.y);
+                        //
+                        //         var line = two.makeLine(x1, y1, x2, y2);
+                        //         line.linewidth = 0.5;
+                        //         line.fill = "#881111";
+                        //         line.stroke = "rgba(0, 0, 0, 255)";
+                        //     }
+                        // }
+                        for (var k = 0; k < magnets.length; k++) {
+                            for (var r = min_radius; r <= max_radius; r += steplength) {
+                                for (var a = 0; a < max_angle; a += steplength) {
+
+                                    console.log(r)
+                                    var i = r*Math.cos(a) + magnets[k][0];
+                                    var j = r*Math.sign(a) + magnets[k][1];
+
+                                    var str = getKey(i, j);
+                                    var currVect = vectors[str];
+                                    var br = new Two.Vector((i - magnets[k][0]) / the_calm_downer, (j - magnets[k][1]) / the_calm_downer);
                                     var r = br.length();
-                                    if (r > strengths[k] / constraint){
+                                    if (r > strengths[k] / constraint) {
                                         continue;
                                     }
-                                    var rhat = new Two.Vector(br.x,br.y);
+                                    var rhat = new Two.Vector(br.x, br.y);
                                     rhat.set(rhat.x / r, rhat.y / r);
-                                    var m = new Two.Vector(0, 5*20 / 6 * strengths[k]);
+                                    var m = new Two.Vector(0, 5 * 20 / 6 * strengths[k]);
                                     var numTermOne = 3 * rhat.dot(m);
                                     var numerator = (rhat.multiplyScalar(numTermOne)).subSelf(m);
                                     numerator.divideScalar(2 * Math.PI * r * r);
 
 
-                                    if(r > 1.5) {
+                                    if (r > 1.5) {
                                         if (currVect == null) {
                                             vectors[str] = new Two.Vector();
                                         }
                                         vectors[str].addSelf(numerator);
                                         currVect = vectors[str];
                                     }
-                                }
-                                if (currVect == null)
-                                    continue;
-                                if (currVect.length() > stepLength * 2)
-                                    currVect = currVect.normalize().multiplyScalar(stepLength * 2);
-                                var x2 = i + 0.5 * (currVect.x);
-                                var x1 = i - 0.5 * (currVect.x);
-                                var y2 = j + 0.5 * (currVect.y);
-                                var y1 = j - 0.5 * (currVect.y);
+                                    if (currVect == null)
+                                        continue;
+                                    if (currVect.length() > stepLength * 2)
+                                        currVect = currVect.normalize().multiplyScalar(stepLength * 2);
+                                    var x2 = i + 0.5 * (currVect.x);
+                                    var x1 = i - 0.5 * (currVect.x);
+                                    var y2 = j + 0.5 * (currVect.y);
+                                    var y1 = j - 0.5 * (currVect.y);
 
-                                var line = two.makeLine(x1, y1, x2, y2);
-                                line.linewidth = 0.5;
-                                line.fill = "#881111";
-                                line.stroke = "rgba(0, 0, 0, 255)";
+                                    var line = two.makeLine(x1, y1, x2, y2);
+                                    line.linewidth = 0.5;
+                                    line.fill = "#881111";
+                                    line.stroke = "rgba(0, 0, 0, 255)";
+
+                                }
                             }
                         }
                         // two has convenience methods to create shapes.
@@ -121,6 +181,8 @@
                         // to the screen
                         two.update();
                     }
+
+
 
                     d = new Date();
                     console.log(d.getTime(), t);
