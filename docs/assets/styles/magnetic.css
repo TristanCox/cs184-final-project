@@ -19,16 +19,6 @@ header {
     margin-left: auto;
 }
 
-#image-banner {
-    background-image: url('../images/magnet.jpg');
-    background-size: cover;
-    width: 100%;
-    height: 700px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
 
 #title {
 font-family: 'Karla', sans-serif;
