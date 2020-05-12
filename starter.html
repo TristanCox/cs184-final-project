@@ -20,8 +20,8 @@
           y += MAX_16BIT_SIGNED;
           return (x << 16) | y;
         }
-        var width = 800;
-        var height = 600;
+        var width = screen.width - 100;
+        var height = screen.height - 100;
         var the_calm_downer = 10;
 
         var particleSpeed = 0.1;
@@ -31,15 +31,18 @@
         var two = new Two(params).appendTo(elem);
 
         var stepLength = 10;
-        var magnets = new Array(2);
+        var magnets = new Array(5);
         for (var i = 0; i < magnets.length; i++) {
           magnets[i] = new Array(4);
         }
 
-        magnets[0] = [426, 189, 20, 40];
-        magnets[1] = [150, 150, 10, 20];
+        magnets[0] = [width - 50, 300, 20, 40];
+        magnets[1] = [width - 50, 400, 10, 20];
+        magnets[2] = [width - 50, 500, 20, 40];
+        magnets[3] = [width - 50, 600, 10, 20];
+        magnets[4] = [width - 50, 700, 10, 20];
 
-        var numStars = 1000;
+        var numStars = 10000;
         var starProps = new Array(numStars);
         var stars = new Array(numStars);
         var vectors = {};
@@ -66,7 +69,6 @@
             if (ox > left && ox < right && oy > up && oy < down) {
               moved = i;
                 magMoved = i;
-                console.log("magmoved: " +  magMoved);
             } else {
               console.log(ox, oy, "LRUD: ", left, right, up, down);
             }
@@ -189,16 +191,20 @@
                       star.translation.y = starProps[j][1];
                   }
               }
+          });
 
-         // }
+         //}
 
         //magMoved = -1;
 
-        });
 
 
         function render() {
             two.clear();
+
+            var bar = two.makeRectangle(width - 50, height / 2, 100, height);
+            bar.fill = 'gray';
+
             vectors = {};
             strengths[0] = controls.strength1;
             strengths[1] = controls.strength2;
@@ -207,6 +213,8 @@
                     var str = getKey(i, j);
                     var currVect = vectors[str];
                     for (var k = 0; k < magnets.length; k++) {
+                        if (magnets[k][0] > width - 100) 
+                          continue;
                         var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
                         var r = br.length();
                         if (r > strengths[k] / constraint)
@@ -242,13 +250,26 @@
             // two has convenience methods to create shapes.
             var rect = two.makeRectangle(magnets[0][0], magnets[0][1], magnets[0][2], magnets[0][3]);
             var rect2 = two.makeRectangle(magnets[1][0], magnets[1][1], magnets[1][2], magnets[1][3]);
+            var rect3 = two.makeRectangle(magnets[2][0], magnets[2][1], magnets[2][2], magnets[2][3]);
+            var rect4 = two.makeRectangle(magnets[3][0], magnets[3][1], magnets[3][2], magnets[3][3]);
+            var rect5 = two.makeRectangle(magnets[4][0], magnets[4][1], magnets[4][2], magnets[4][3]);
 
             //center of rect: 218, 110
-            rect.fill = 'rgb(0, 200, 255)';
+            rect.fill = 'red';
             rect.noStroke();
 
-            rect2.fill = 'blue';
+            rect2.fill = 'orange';
             rect2.noStroke();
+
+            rect3.fill = 'yellow';
+            rect3.noStroke();
+
+            rect4.fill = 'green';
+            rect4.noStroke();
+
+            rect5.fill = 'blue';
+            rect5.noStroke();
+
 
             // Don't forget to tell two to render everything
             for (var i = 0; i < numStars; i++){
@@ -275,6 +296,12 @@
           strengths[0] = this.strength1;
           this.strength2 = 50;
           strengths[1] = this.strength2;
+          this.strength3 = 50;
+          strengths[2] = this.strength3;
+          this.strength4 = 50;
+          strengths[3] = this.strength4;
+          this.strength5 = 50;
+          strengths[4] = this.strength5;
         };
 
         var Play = { Play:function(){two.play();}};
@@ -282,6 +309,9 @@
         var gui = new dat.GUI();
         var strength1 = gui.add(controls, 'strength1', 0, 100);
         var strength2 = gui.add(controls, 'strength2', 0, 100);
+        var strength3 = gui.add(controls, 'strength3', 0, 100);
+        var strength4 = gui.add(controls, 'strength4', 0, 100);
+        var strength5 = gui.add(controls, 'strength5', 0, 100);
         var button = gui.add(Play, 'Play');
 
         render();
@@ -289,6 +319,15 @@
             render
             );
         strength2.onChange(
+            render
+            );
+        strength3.onChange(
+            render
+            );
+        strength4.onChange(
+            render
+            );
+        strength5.onChange(
             render
             );
             
