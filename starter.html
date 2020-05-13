@@ -10,7 +10,7 @@
     <script type="text/javascript" src="./dat.gui.js"></script>
 </head>
 <body>
-    <div id="draw-shapes"></div>
+    <div align="middle" id="draw-shapes"></div>
     <script>
         var MAX_16BIT_SIGNED = 32767;
         function getKey(x, y) {
@@ -21,7 +21,9 @@
           return (x << 16) | y;
         }
         var width = screen.width - 100;
+        width /= 2;
         var height = screen.height - 100;
+        height /= 2;
         var the_calm_downer = 10;
 
         var particleSpeed = 0.1;
@@ -36,13 +38,13 @@
           magnets[i] = new Array(4);
         }
 
-        magnets[0] = [width - 50, 300, 20, 40];
-        magnets[1] = [width - 50, 400, 10, 20];
-        magnets[2] = [width - 50, 500, 20, 40];
-        magnets[3] = [width - 50, 600, 10, 20];
-        magnets[4] = [width - 50, 700, 10, 20];
+        magnets[0] = [width - 50, height / 6, 20, 40];
+        magnets[1] = [width - 50, height * 2 / 6, 10, 20];
+        magnets[2] = [width - 50, height / 2, 20, 40];
+        magnets[3] = [width - 50, height * 2 / 3, 10, 20];
+        magnets[4] = [width - 50, height * 5 / 6, 10, 20];
 
-        var numStars = 10000;
+        var numStars = 1500;
         var starProps = new Array(numStars);
         var stars = new Array(numStars);
         var vectors = {};
@@ -89,6 +91,7 @@
           }
         }
 
+        elem.style.transform = "scale(1.3, 1.3) translateY(30%)";
 
         for (var i = 0; i < numStars; i++) {
             var rand = Math.floor((Math.random() * 10) + 1);
@@ -143,13 +146,13 @@
                       }
                   }
 
-                  var low_x = parseInt(Math.floor(x), 10);
+                  var low_x = parseInt(Math.round(x), 10);
                   low_x -= low_x % stepLength;
-                  var low_y = parseInt(Math.floor(y), 10);
+                  var low_y = parseInt(Math.round(y), 10);
                   low_y -= low_y % stepLength;
-                  var high_x = parseInt(Math.ceil(x), 10);
+                  var high_x = parseInt(Math.round(x), 10);
                   high_x += stepLength - (high_x % stepLength);
-                  var high_y = parseInt(Math.ceil(y), 10);
+                  var high_y = parseInt(Math.round(y), 10);
                   high_y += stepLength - (high_y % stepLength);
                   var keys = [getKey(low_x, low_y), getKey(low_x, high_y), getKey(high_x, high_y), getKey(high_x, low_y)];
                   var avgVect = [0,0];
@@ -161,6 +164,7 @@
                           avgVect[0] += vect.x;
                           avgVect[1] += vect.y;
                       }
+                      console.log();
                   }
 
                   if (avgVect[0] != 0 || avgVect[1] != 0) {
@@ -183,8 +187,15 @@
                           F[0] /= div / moveLimit;
                           F[1] /= div / moveLimit;
                       }
-                      starProps[j][2] += F[0];
-                      starProps[j][3] += F[1];
+                      starProps[j][2] += avgVect[0] * particleSpeed;
+                      starProps[j][3] += avgVect[1] * particleSpeed;
+                      var maxVel = 50;
+                      if (Math.sqrt(starProps[j][2] * starProps[j][2] + starProps[j][3] * starProps[j][3]) > maxVel) {
+                        var denom = Math.abs(starProps[j][2]) + Math.abs(starProps[j][3]);
+                        starProps[j][2] /= denom / maxVel;
+                        starProps[j][3] /= denom / maxVel;
+                      }
+
                       starProps[j][0] = x + starProps[j][2] * particleSpeed;
                       starProps[j][1] = y + starProps[j][3] * particleSpeed;
                       star.translation.x = starProps[j][0];
@@ -208,6 +219,9 @@
             vectors = {};
             strengths[0] = controls.strength1;
             strengths[1] = controls.strength2;
+            strengths[2] = controls.strength3;
+            strengths[3] = controls.strength4;
+            strengths[4] = controls.strength5;
             for (var i = 0; i < width; i += stepLength) {
                 for (var j = 0; j < height; j += stepLength) {
                     var str = getKey(i, j);
@@ -242,6 +256,9 @@
                     var y1 = j - 0.5 * (currVect.y);
 
                   var line = two.makeLine(x1, y1, x2, y2);
+                  var point = two.makeStar(x2, y2, 1, 2, 3);
+                  point.fill = "red";
+                  point.stroke = "blue";
                   line.linewidth = 0.5;
                   line.fill = "#881111";
                   line.stroke = "rgba(0, 0, 0, 255)";
