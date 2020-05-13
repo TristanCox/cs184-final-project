@@ -26,6 +26,9 @@
         height /= 2;
         var the_calm_downer = 10;
 
+        var maxVel = 50;
+        var arrows = false;
+
         var particleSpeed = 0.1;
 
         var elem = document.getElementById('draw-shapes');
@@ -189,7 +192,6 @@
                       }
                       starProps[j][2] += avgVect[0] * particleSpeed;
                       starProps[j][3] += avgVect[1] * particleSpeed;
-                      var maxVel = 50;
                       if (Math.sqrt(starProps[j][2] * starProps[j][2] + starProps[j][3] * starProps[j][3]) > maxVel) {
                         var denom = Math.abs(starProps[j][2]) + Math.abs(starProps[j][3]);
                         starProps[j][2] /= denom / maxVel;
@@ -256,12 +258,14 @@
                     var y1 = j - 0.5 * (currVect.y);
 
                   var line = two.makeLine(x1, y1, x2, y2);
-                  var point = two.makeStar(x2, y2, 1, 2, 3);
-                  point.fill = "red";
-                  point.stroke = "blue";
                   line.linewidth = 0.5;
                   line.fill = "#881111";
                   line.stroke = "rgba(0, 0, 0, 255)";
+                  if (arrows) {
+                    var point = two.makeStar(x2, y2, 1, 2, 3);
+                    point.fill = "red";
+                    point.stroke = "blue";
+                  }
                 }
             }
             // two has convenience methods to create shapes.
@@ -319,9 +323,11 @@
           strengths[3] = this.strength4;
           this.strength5 = 50;
           strengths[4] = this.strength5;
+          this.maxSpeed = 20;
         };
 
         var Play = { Play:function(){two.play();}};
+        var Arrows = { Arrows: function(){arrows = !arrows; render();}};
 
         var gui = new dat.GUI();
         var strength1 = gui.add(controls, 'strength1', 0, 100);
@@ -329,7 +335,9 @@
         var strength3 = gui.add(controls, 'strength3', 0, 100);
         var strength4 = gui.add(controls, 'strength4', 0, 100);
         var strength5 = gui.add(controls, 'strength5', 0, 100);
+        var maxSpeed = gui.add(controls, 'maxSpeed', 0, 70);
         var button = gui.add(Play, 'Play');
+        var uthuhbutt = gui.add(Arrows, 'Arrows');
 
         render();
         strength1.onChange(
@@ -347,6 +355,12 @@
         strength5.onChange(
             render
             );
+        maxSpeed.onChange(
+            function() {
+              maxVel = controls.maxSpeed;
+            }
+            );
+
             
 
     </script>
