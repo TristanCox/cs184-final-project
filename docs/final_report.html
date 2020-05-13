@@ -1,0 +1,229 @@
+<html>
+    <head>
+	<link rel="stylesheet" type="text/css" href="assets/styles/page.css">
+	<link href="https://fonts.googleapis.com/css?family=Karla" rel="stylesheet">
+	<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+	<meta charset="utf-8">
+    </head>
+
+
+
+    <body>
+	<header>
+	    <div class="content">
+		<div id="title">
+		    <a href="index.html">CS184 Final Project</a></li>
+		</div>
+		<div class="navbar">
+		    <a href="">Final Report</a></li>
+		<a href="milestone.html">Milestone</a></li>
+	    <a href="proposal.html">Proposal</a></li>
+	    <a href="magnetic_playground.html">Simulation</a></li>
+		</div>
+	    </div>
+
+	</header>
+	<div id="image-banner"></div>
+	<div id="container">
+	    <div class="section">
+		<div class="info">
+		    <div class="body-header">Final Report</div>
+
+		    <div class="info-title">A Two-Dimensional Magnetic Playground </div>
+		    <div class="info-content">
+			<div class="info-required">Summary</div>
+			<div class="info-intro">In this project we implemented a live simulation of a magnet interacting with
+			    particles. Operating in two dimensions, we rendered magnetic fields in the web browser and showed how
+			    different magnetic fields affect the particles.
+			</div>
+		    </div>
+
+		    <div class="body">
+
+			<div class="body-header">Technical Approach</div>
+
+
+			<p></p>
+			<p>
+			    We began this project without any starter code and no prior knowledge of javascript.
+			    After doing some research and talking to our teacher's assistant we decided to use Two.js
+			    which would allow us to render our two dimensional simulation in the web browser. 
+			</p>
+			<p>
+			    We started our project by implementing a physically accurate magnetic vector field. We
+			    did some research into magnetic physics formulae and determined that we would need to 
+			    calculate the magnetic flux and dipole moment.
+			    \[flux\ density:\ B(r) =  {\mu \over 4\pi} \left[{3n\ (n \cdot m) - m \over
+			    \left\lvert r - r_o^3 \right\rvert}\right].\] \[ \]
+			    \[force\ on\ particles:\ F =\ \nabla\ (m \cdot b).\]
+			</p>
+			<p>
+			    Above are the formulae used to calculate the magnetic field vectors that we subsequently
+			    rendered.
+			</p>
+
+			<p>
+			     We looped through the space surrounding the magnet and used the distance from the magnet
+			     as well as properties of the magnet to determine the strength of the magnetic field at
+			     different locations. At the time we simply rendered these as lines and there was no other
+			     real consequence of these calculations. 
+			</p>
+			<p> 
+			    Since we were rendering our simulations live instead of prerendering them, we ran into
+			    optimazation issues immediatly. Without even adding particles, due to the large resolution of our
+			    magnetic fields it was taking a long time for the user to interact with the magnets. We
+			    realised that we could adjust how much of the field we displayed according the magnetic
+			    strength. The reasoning being that if the magnetic strength is low enough to not have a significant
+			    effect on a vector currently being calculated, it is a waste of resources to include in our
+			    rendering. Setting these limitations helped significantly with the speed of the simulation.
+
+			</p>
+			<p>
+			    Another approach we attempted to optimize our code was to switch to polar coordinates
+			    instead cartesian coordinates following a recomendation after our milestone. Since we used
+			    magnetic strength to determine what lines were rendered, this created a limitation around
+			    each magnet that was dependent on a specific radius calculated from the magnetic strength. 
+			    We thought that by looping from the center of each magnet to that radius we could create a
+			    more efficient system. Unfortunetly this did not give us the optimization we were after or
+			    pleasing visual results.
+			</p>
+			
+			<p>
+			    We also played with the step size and saw that not only did a bigger step size improve our
+			    optimization, it also maintained the classical magnetic field shape that we were after. 
+			</p>
+			<p>
+			    Since the strength of the field determined the length of the line displayed, we limited them
+			    to not overtake each other to the extent that it would compromise the shape of the magnetic
+			    field. This greatly improved our visual results.
+			</p>
+
+			<p>
+			    After we successfully optimized our code we were able to display multiple magnets and render
+			    their magnetic fields interacting in a timely manner. 
+			</p>
+			
+			<p>
+			    Our next step was introducing particles into the magnetic field. We were originally inspired
+			    to render iron shards inside the magnetic field. However, what we did not realize at the
+			    time was that iron shards in magnetic fields produce such interesting images because they
+			    are ferromagnets. These special types of magnets in contrast to permanent magnets (which have
+			    their own magnetic moments) are magnetized by the external magnetic field. The interesting patterns are 
+			    formed by the magnetic forces between iron filings. In order to render ferromagnets we would have
+			    needed to calculate the magnetic force betweeen each particle as they each "turn in to" a magnet when
+			    they are placed in the magnetic field. This explains why the iron shards remain in the field and 
+			    do not fly away dramatically. 
+			</p>
+
+			<p>
+			    Since having a live magnetic playground was important to us, we decided to instead render
+			    regular metal particles without the special ferromagnetic properties. This is where we diverged from
+			    the primary research paper we were referencing and had to determine our own standard for a successful
+			    representation.
+			</p>
+			<p>
+			    For each particle we determined whether it was in the magnetic field and if it was, we
+			    applied bi-linear interpolation to determine the approximate aggregate force.
+			</p>
+			<p>
+			    \[lerp(x, v_0, v_1) =\ v_0 + x(v_1-v_0).\]
+			</p>
+			<p>
+			    We then calculated the acceleration and used Verlet Integration to update the position of the
+			    particle.  
+
+			    \[ x_{t+dt} = x_t + v_t * dt + a_t *dt^2.\]
+			</p>
+			<p>
+			    In order to make sure the particles correctly interacted with the magnet, we had to deal
+			    with collisions. Specifically, our simulation needed to show that when a particle collides
+			    with a magnet, it does not continue to move in the direction of the magnetic field lines but
+			    rather comes to a halt. We used priciples discussed in project four in order to detect
+			    colisions and set the velocity to zero so it would appear to stick to the magnet. When the
+			    magnet is dragged to a new position, everything is reset and the particles will be able to
+			    move once again.
+			</p>
+
+			<p>
+			    In order to make our system interactive we used dat.gui.js to implement a graphical user
+			    interface (GUI). We made it possible for the user to adjust the strength of each magnet, drag each
+			    magnet, and introduce new magnets into the simulation. By implementing the GUI we were able
+			    to finally create the magnetic playground we set out to accomplish.
+			</p>
+
+			
+			<div class="body-header">Results</div>
+			<p></p>
+			<p>
+			    To play with our magnetic playground click simulation in the navigation bar above!
+			</p>
+			<p>
+			    Below is an additionally video walkthrough of our project.
+			</p>
+
+			<ul>
+			    <iframe width="560" height="315"
+			   src="https://www.youtube.com/embed/ueZdjJqsqj8" frameborder="0"
+						      allow="accelerometer; autoplay; encrypted-media; gyroscope;
+						      picture-in-picture" allowfullscreen></iframe>
+
+
+
+			</ul>
+			<div class="body-header">References</div>
+			<p> These are the resources we refrenced while implementing this project</p>
+			<ul>
+			    <li> <a href="https://link-springer-com.libproxy.berkeley.edu/content/pdf/10.1007/s00371-014-0953-2.pdf">
+				    Computer-Generated Iron Filing Art</a> by Wonbae Yoon, Namil Lee, Kiwon Um, and JungHyun Han.
+			    </li>
+			    <li><a href="https://two.js.org">Two.js</a> A two-dimensional drawing api geared towards modern web browsers.</li>
+			    <li><a href="https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage">dat.GUI.js</a> A lightweight graphical user interface for changing variables in JavaScript.</li>
+			    <li> <a href="https://cs184.eecs.berkeley.edu/sp20/article/36/assignment-4-cloth-simulation">
+				    CS184 Project 4 - Cloth Simulation</a> A real-time 3D simulation of cloth using a mass
+				and spring based system with collision detection.</li>
+			    <li><a href="http://hyperphysics.phy-astr.gsu.edu/hbase/Solids/ferro.html">Hyper Physics -
+				    Ferromagetism</a></li>
+			</ul>
+
+
+			<div class="body-header"> Contribution Breakdown </div>
+
+			<p>
+			    Since this project had to be done completely virtually due to COVID-19, much of the
+			    project implementation was done via pair programming. One person would share their
+			    screen while the others would watch, advise, and debug.
+			</p>	
+			<ul>
+			    <li>
+				Tristan took the lead on implementing the magnetic field lines and adding particle
+				movement.
+			    </li>	
+			    <li>
+				Amber focused on improving optimization and implementing the GUI.
+			    </li>	
+			    <li>
+				Isabel was responsible for collision detection and creating the website where we host our
+				simulation and all our documentation.
+			    </li>
+			</ul>
+
+			<p>
+			    Even though we each had parts that we worked on more than others, we were all very involved
+			    in each stage of the project whether that be in the form of researching, debugging, or providing direction.
+			</p>
+
+			<div class="body-header"> Slides </div>
+			<ul>
+
+			    <iframe src="assets/images/FinalProjectSlidesMileston.pdf"
+	       width="560" height="350">
+			    </iframe>
+
+			</ul>
+
+		    </div>
+		</div>
+	    </div>
+    </body>
+</html>
