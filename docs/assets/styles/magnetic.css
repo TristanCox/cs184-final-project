@@ -28,7 +28,14 @@ header {
 
 #title {
 font-family: 'Karla', sans-serif;
-font-size: 40px;
+font-size: 50px;
+color: black;
+display: inline;
+}
+
+#subtitle {
+font-family: 'Karla', sans-serif;
+font-size: 20px;
 color: black;
 display: inline;
 }
@@ -37,6 +44,7 @@ display: inline;
    display: inline;
    
 }
+
 #navbar-item {
 color: black;
 display: inline;
@@ -74,13 +82,6 @@ list-style-type: none;
   
 }
 
-.title {
-    font-family: 'Karla', cursive;
-    font-size: 50px;
-    color: rgb(0, 0, 0);
-    text-align: center;
-
-}
 .names {
   font-family: 'Karla', cursive;
   font-size: 29px;
