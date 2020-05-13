@@ -20,34 +20,36 @@ header {
     width: 1200px;
     margin-right: auto;
     margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 #draw-shapes{
 }
 
 
-#title {
+.title {
 font-family: 'Karla', sans-serif;
 font-size: 50px;
 color: black;
-display: inline;
+display: flex;
+flex-direction: column;
+align-items: center;
 }
 
-#subtitle {
+.subtitle {
 font-family: 'Karla', sans-serif;
-font-size: 20px;
+font-size: 25px;
 color: black;
-display: inline;
 }
 
 .navbar{
-   display: inline;
-   
+  display: inline; 
 }
 
 #navbar-item {
 color: black;
-display: inline;
 float: right;
 font-family: 'Karla', cursive;
 font-size: 30px;
