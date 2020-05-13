@@ -10,7 +10,7 @@
     <script type="text/javascript" src="./dat.gui.js"></script>
 </head>
 <body>
-    <div id="draw-shapes"></div>
+    <div align="middle" id="draw-shapes"></div>
     <script>
         var MAX_16BIT_SIGNED = 32767;
         function getKey(x, y) {
@@ -20,9 +20,14 @@
           y += MAX_16BIT_SIGNED;
           return (x << 16) | y;
         }
-        var width = 800;
-        var height = 600;
+        var width = screen.width - 100;
+        width /= 2;
+        var height = screen.height - 100;
+        height /= 2;
         var the_calm_downer = 10;
+
+        var maxVel = 50;
+        var arrows = false;
 
         var particleSpeed = 0.1;
 
@@ -31,15 +36,18 @@
         var two = new Two(params).appendTo(elem);
 
         var stepLength = 10;
-        var magnets = new Array(2);
+        var magnets = new Array(5);
         for (var i = 0; i < magnets.length; i++) {
           magnets[i] = new Array(4);
         }
 
-        magnets[0] = [426, 189, 20, 40];
-        magnets[1] = [150, 150, 10, 20];
+        magnets[0] = [width - 50, height / 6, 20, 40];
+        magnets[1] = [width - 50, height * 2 / 6, 10, 20];
+        magnets[2] = [width - 50, height / 2, 20, 40];
+        magnets[3] = [width - 50, height * 2 / 3, 10, 20];
+        magnets[4] = [width - 50, height * 5 / 6, 10, 20];
 
-        var numStars = 1000;
+        var numStars = 1500;
         var starProps = new Array(numStars);
         var stars = new Array(numStars);
         var vectors = {};
@@ -66,7 +74,6 @@
             if (ox > left && ox < right && oy > up && oy < down) {
               moved = i;
                 magMoved = i;
-                console.log("magmoved: " +  magMoved);
             } else {
               console.log(ox, oy, "LRUD: ", left, right, up, down);
             }
@@ -87,6 +94,7 @@
           }
         }
 
+        elem.style.transform = "scale(1.3, 1.3) translateY(30%)";
 
         for (var i = 0; i < numStars; i++) {
             var rand = Math.floor((Math.random() * 10) + 1);
@@ -141,13 +149,13 @@
                       }
                   }
 
-                  var low_x = parseInt(Math.floor(x), 10);
+                  var low_x = parseInt(Math.round(x), 10);
                   low_x -= low_x % stepLength;
-                  var low_y = parseInt(Math.floor(y), 10);
+                  var low_y = parseInt(Math.round(y), 10);
                   low_y -= low_y % stepLength;
-                  var high_x = parseInt(Math.ceil(x), 10);
+                  var high_x = parseInt(Math.round(x), 10);
                   high_x += stepLength - (high_x % stepLength);
-                  var high_y = parseInt(Math.ceil(y), 10);
+                  var high_y = parseInt(Math.round(y), 10);
                   high_y += stepLength - (high_y % stepLength);
                   var keys = [getKey(low_x, low_y), getKey(low_x, high_y), getKey(high_x, high_y), getKey(high_x, low_y)];
                   var avgVect = [0,0];
@@ -159,6 +167,7 @@
                           avgVect[0] += vect.x;
                           avgVect[1] += vect.y;
                       }
+                      console.log();
                   }
 
                   if (avgVect[0] != 0 || avgVect[1] != 0) {
@@ -181,32 +190,47 @@
                           F[0] /= div / moveLimit;
                           F[1] /= div / moveLimit;
                       }
-                      starProps[j][2] += F[0];
-                      starProps[j][3] += F[1];
+                      starProps[j][2] += avgVect[0] * particleSpeed;
+                      starProps[j][3] += avgVect[1] * particleSpeed;
+                      if (Math.sqrt(starProps[j][2] * starProps[j][2] + starProps[j][3] * starProps[j][3]) > maxVel) {
+                        var denom = Math.abs(starProps[j][2]) + Math.abs(starProps[j][3]);
+                        starProps[j][2] /= denom / maxVel;
+                        starProps[j][3] /= denom / maxVel;
+                      }
+
                       starProps[j][0] = x + starProps[j][2] * particleSpeed;
                       starProps[j][1] = y + starProps[j][3] * particleSpeed;
                       star.translation.x = starProps[j][0];
                       star.translation.y = starProps[j][1];
                   }
               }
+          });
 
-         // }
+         //}
 
         //magMoved = -1;
 
-        });
 
 
         function render() {
             two.clear();
+
+            var bar = two.makeRectangle(width - 50, height / 2, 100, height);
+            bar.fill = 'gray';
+
             vectors = {};
             strengths[0] = controls.strength1;
             strengths[1] = controls.strength2;
+            strengths[2] = controls.strength3;
+            strengths[3] = controls.strength4;
+            strengths[4] = controls.strength5;
             for (var i = 0; i < width; i += stepLength) {
                 for (var j = 0; j < height; j += stepLength) {
                     var str = getKey(i, j);
                     var currVect = vectors[str];
                     for (var k = 0; k < magnets.length; k++) {
+                        if (magnets[k][0] > width - 100) 
+                          continue;
                         var br = new Two.Vector((i - magnets[k][0])/the_calm_downer, (j - magnets[k][1])/the_calm_downer);
                         var r = br.length();
                         if (r > strengths[k] / constraint)
@@ -237,18 +261,36 @@
                   line.linewidth = 0.5;
                   line.fill = "#881111";
                   line.stroke = "rgba(0, 0, 0, 255)";
+                  if (arrows) {
+                    var point = two.makeStar(x2, y2, 1, 2, 3);
+                    point.fill = "red";
+                    point.stroke = "blue";
+                  }
                 }
             }
             // two has convenience methods to create shapes.
             var rect = two.makeRectangle(magnets[0][0], magnets[0][1], magnets[0][2], magnets[0][3]);
             var rect2 = two.makeRectangle(magnets[1][0], magnets[1][1], magnets[1][2], magnets[1][3]);
+            var rect3 = two.makeRectangle(magnets[2][0], magnets[2][1], magnets[2][2], magnets[2][3]);
+            var rect4 = two.makeRectangle(magnets[3][0], magnets[3][1], magnets[3][2], magnets[3][3]);
+            var rect5 = two.makeRectangle(magnets[4][0], magnets[4][1], magnets[4][2], magnets[4][3]);
 
             //center of rect: 218, 110
-            rect.fill = 'rgb(0, 200, 255)';
+            rect.fill = 'red';
             rect.noStroke();
 
-            rect2.fill = 'blue';
+            rect2.fill = 'orange';
             rect2.noStroke();
+
+            rect3.fill = 'yellow';
+            rect3.noStroke();
+
+            rect4.fill = 'green';
+            rect4.noStroke();
+
+            rect5.fill = 'blue';
+            rect5.noStroke();
+
 
             // Don't forget to tell two to render everything
             for (var i = 0; i < numStars; i++){
@@ -275,14 +317,27 @@
           strengths[0] = this.strength1;
           this.strength2 = 50;
           strengths[1] = this.strength2;
+          this.strength3 = 50;
+          strengths[2] = this.strength3;
+          this.strength4 = 50;
+          strengths[3] = this.strength4;
+          this.strength5 = 50;
+          strengths[4] = this.strength5;
+          this.maxSpeed = 20;
         };
 
         var Play = { Play:function(){two.play();}};
+        var Arrows = { Arrows: function(){arrows = !arrows; render();}};
 
         var gui = new dat.GUI();
         var strength1 = gui.add(controls, 'strength1', 0, 100);
         var strength2 = gui.add(controls, 'strength2', 0, 100);
+        var strength3 = gui.add(controls, 'strength3', 0, 100);
+        var strength4 = gui.add(controls, 'strength4', 0, 100);
+        var strength5 = gui.add(controls, 'strength5', 0, 100);
+        var maxSpeed = gui.add(controls, 'maxSpeed', 0, 70);
         var button = gui.add(Play, 'Play');
+        var uthuhbutt = gui.add(Arrows, 'Arrows');
 
         render();
         strength1.onChange(
@@ -291,6 +346,21 @@
         strength2.onChange(
             render
             );
+        strength3.onChange(
+            render
+            );
+        strength4.onChange(
+            render
+            );
+        strength5.onChange(
+            render
+            );
+        maxSpeed.onChange(
+            function() {
+              maxVel = controls.maxSpeed;
+            }
+            );
+
             
 
     </script>
